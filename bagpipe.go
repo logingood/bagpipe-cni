@@ -127,8 +127,8 @@ func setupVeth(netns string, ifName string, mtu int) (contMacAddr string, hostVe
 			if inter.Name != "lo" {
 				contMacAddr = fmt.Sprintf("%v", inter.HardwareAddr)
 			}
-
 		}
+
 		return nil
 	})
 	if err != nil {
@@ -207,12 +207,30 @@ func cmdDel(args *skel.CmdArgs) error {
 		return err
 	}
 
-	err = ipam.ExecDel(n.IPAM.Type, args.StdinData)
+	result, err := ipam.ExecDel(n.IPAM.Type, args.StdinData)
 	if err != nil {
 		return err
 	}
 
 	return ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
+		iface, err := netlink.LinkByName(ifName)
+
+		hostVethName := iface.Attrs().Name
+		interfaces, _ := net.Interfaces()
+
+		// Lookup MAC address of eth0 inside namespace
+		for _, inter := range interfaces {
+			if inter.Name != "lo" {
+				contMacAddr = fmt.Sprintf("%v", inter.HardwareAddr)
+			}
+		}
+
+		var ip_gw, ip_addr string
+
+		ip_gw = fmt.Sprintf("%v", &result.IP4.Gateway)
+		ip_addr = fmt.Sprintf("%v", &result.IP4.IP)
+
+		sendBagpipeReq(n, "detach", hostVethName, ip_gw, ip_addr, macAddr)
 		return ip.DelLinkByName(args.IfName)
 	})
 }
