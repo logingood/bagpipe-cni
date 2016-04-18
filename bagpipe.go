@@ -18,8 +18,6 @@ import (
 	"github.com/appc/cni/pkg/utils"
 )
 
-const defaultBrName = "cni0"
-
 // Adding additional configuration for EVPN - importRT and exportRT
 type NetConf struct {
 	types.NetConf
@@ -29,8 +27,6 @@ type NetConf struct {
 	IPMasq   bool   `json:"ipMasq"`
 	MTU      int    `json:"mtu"`
 }
-
-// JSON payload struct for bagpipeBGP
 
 func init() {
 	// this ensures that main runs only on main thread (thread group leader).
@@ -51,6 +47,7 @@ func loadNetConf(bytes []byte) (*NetConf, error) {
 
 func createBGPConf(n *NetConf, LocalPort string, gw string, ipa string, mac string) (b []byte, err error) {
 
+	// JSON payload struct for bagpipeBGP
 	type Message struct {
 		Import_rt        []string         `json:"import_rt"`
 		Vpn_type         string           `json:"vpn_type"`
@@ -64,6 +61,7 @@ func createBGPConf(n *NetConf, LocalPort string, gw string, ipa string, mac stri
 		Advertise_subnet bool             `json:"advertise_subnet"`
 	}
 
+	// Linuxif Raw JSON object
 	type LcPorts struct {
 		LinuxIf string `json:"linuxif"`
 	}
@@ -94,15 +92,20 @@ func createBGPConf(n *NetConf, LocalPort string, gw string, ipa string, mac stri
 func sendBagpipeReq(n *NetConf, Request string, LocalPort string, gw string, ipa string, mac string) error {
 	// send json payload
 	url := fmt.Sprintf("http://127.0.0.1:8082/%s_localport", Request)
+
 	var jsonStr []byte
+	// create JSON object for BagpipeBGP
 	jsonStr, err := createBGPConf(n, LocalPort, gw, ipa, mac)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
+
 	if err != nil {
 		panic(err)
 	}
+
 	defer resp.Body.Close()
 	return err
 }
@@ -118,6 +121,8 @@ func setupVeth(netns string, ifName string, mtu int) (contMacAddr string, hostVe
 
 		hostVethName = hostVeth.Attrs().Name
 		interfaces, _ := net.Interfaces()
+
+		// Lookup MAC address of eth0 inside namespace
 		for _, inter := range interfaces {
 			if inter.Name != "lo" {
 				contMacAddr = fmt.Sprintf("%v", inter.HardwareAddr)
@@ -195,6 +200,8 @@ func cmdAdd(args *skel.CmdArgs) error {
 }
 
 func cmdDel(args *skel.CmdArgs) error {
+
+	// bagpipe detach should be implemented
 	n, err := loadNetConf(args.StdinData)
 	if err != nil {
 		return err
