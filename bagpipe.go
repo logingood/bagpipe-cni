@@ -16,6 +16,8 @@ import (
 	"github.com/appc/cni/pkg/skel"
 	"github.com/appc/cni/pkg/types"
 	"github.com/appc/cni/pkg/utils"
+	"github.com/safchain/ethtool"
+	"github.com/vishvananda/netlink"
 )
 
 // Adding additional configuration for EVPN - importRT and exportRT
@@ -212,9 +214,41 @@ func cmdDel(args *skel.CmdArgs) error {
 		return err
 	}
 
-	return ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
-		return ip.DelLinkByName(args.IfName)
+	var contMacAddr string
+	var hostVethName string
+	var ip_gw string
+	var ip_addr string
+	var if_index uint64
+
+	err = ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
+		link, _ := netlink.LinkByName(args.IfName)
+
+		// Getting container MAC address
+		contMacAddr = fmt.Sprintf("%s", link.Attrs().HardwareAddr)
+		// Getting container IP address, should be rewritten PoC
+		cont_IP, _ := netlink.AddrList(link, netlink.FAMILY_V4)
+		prefix, _ := cont_IP[0].IPNet.Mask.Size()
+		ip_addr = fmt.Sprintf("%s/%d", cont_IP[0].IPNet.IP, prefix)
+
+		// Getting peer interface index in Root namespace
+		stats, _ := ethtool.Stats(args.IfName)
+		if_index = stats["peer_ifindex"]
+
+		// Getting default gateway address - should be rewritten PoC
+		gw_route, _ := netlink.RouteGet(net.ParseIP("1.2.3.4"))
+		ip_gw = fmt.Sprintf("%s", gw_route[0].Gw)
+
+		return nil
 	})
+
+	// Getting hostlink based on if_index in Root NS
+	hostlink, _ := netlink.LinkByIndex(int(if_index))
+	hostVethName = hostlink.Attrs().Name
+
+	// Dettaching the route from BaGPipe BGP
+	sendBagpipeReq(n, "detach", hostVethName, ip_gw, ip_addr, contMacAddr)
+	// Removing the link
+	return ip.DelLinkByName(hostVethName)
 }
 
 func main() {

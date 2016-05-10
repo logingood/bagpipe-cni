@@ -12,8 +12,7 @@ Nice example of go-based RR: [GoBGP](http://osrg.github.io/gobgp/) and EVPN lab 
 
 ## Install
 
-The easiest way to install plugin:
-clone CNI repositority: [CNI](https://github.com/appc/cni) 
+The easiest way to install plugin is to clone CNI repositority: [CNI](https://github.com/appc/cni)
 
 Make sure that GOPATH environment variable is set
 
