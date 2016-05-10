@@ -10,6 +10,8 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/safchain/ethtool"
+	"github.com/vishvananda/netlink"
 	"github.com/appc/cni/pkg/ip"
 	"github.com/appc/cni/pkg/ipam"
 	"github.com/appc/cni/pkg/ns"
@@ -127,8 +129,8 @@ func setupVeth(netns string, ifName string, mtu int) (contMacAddr string, hostVe
 			if inter.Name != "lo" {
 				contMacAddr = fmt.Sprintf("%v", inter.HardwareAddr)
 			}
-		}
 
+		}
 		return nil
 	})
 	if err != nil {
@@ -207,32 +209,46 @@ func cmdDel(args *skel.CmdArgs) error {
 		return err
 	}
 
-	result, err := ipam.ExecDel(n.IPAM.Type, args.StdinData)
+	err = ipam.ExecDel(n.IPAM.Type, args.StdinData)
 	if err != nil {
 		return err
 	}
 
-	return ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
-		iface, err := netlink.LinkByName(ifName)
+	var contMacAddr string
+	var hostVethName string
+	var ip_gw string
+	var ip_addr string
+	var if_index uint64
 
-		hostVethName := iface.Attrs().Name
-		interfaces, _ := net.Interfaces()
 
-		// Lookup MAC address of eth0 inside namespace
-		for _, inter := range interfaces {
-			if inter.Name != "lo" {
-				contMacAddr = fmt.Sprintf("%v", inter.HardwareAddr)
-			}
-		}
+	err = ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
+		link, _ := netlink.LinkByName(args.IfName)
 
-		var ip_gw, ip_addr string
+		// Getting container MAC address
+		contMacAddr =fmt.Sprintf("%s", link.Attrs().HardwareAddr)
+		// Getting container IP address, should be rewritten PoC
+		cont_IP, _ := netlink.AddrList(link, netlink.FAMILY_V4)
+		ip_addr = fmt.Sprintf("%s", cont_IP[0].IPNet.IP)
 
-		ip_gw = fmt.Sprintf("%v", &result.IP4.Gateway)
-		ip_addr = fmt.Sprintf("%v", &result.IP4.IP)
+		// Getting peer interface index in Root namespace
+		stats, _ := ethtool.Stats(args.IfName)
+		if_index = stats["peer_ifindex"]
 
-		sendBagpipeReq(n, "detach", hostVethName, ip_gw, ip_addr, macAddr)
-		return ip.DelLinkByName(args.IfName)
+		// Getting default gateway address - should be rewritten PoC
+		gw_route, _ := netlink.RouteGet(net.ParseIP("1.2.3.4"))
+		ip_gw = fmt.Sprintf("%s", gw_route[0].Gw)
+
+		return nil
 	})
+
+	// Getting hostlink based on if_index in Root NS
+	hostlink, _ := netlink.LinkByIndex(int(if_index))
+	hostVethName = hostlink.Attrs().Name
+
+	// Dettaching the route from BaGPipe BGP
+	sendBagpipeReq(n, "detach", hostVethName, ip_gw, ip_addr, contMacAddr)
+	// Removing the link
+	return ip.DelLinkByName(hostVethName)
 }
 
 func main() {
