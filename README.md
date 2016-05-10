@@ -77,10 +77,11 @@ CNI_PATH=`pwd`/bin
 ./build; cd scripts; CNI_PATH=$CNI_PATH ./docker-run.sh busybox sleep 1000 ; cd ..
 ```
 
+Adding and Deleting of bagpipe tunnels along with container links fully implemented.
+
 ## Diagram 
 
 ![alt text](https://github.com/murat1985/bagpipe-cni/blob/master/diagrams/CNI-Bagpipe.png "BaGPipe BGP CNI plugin")
 
 ## TODO
 1. GW allocation
-2. Delete bagpipe bgp tunnel
