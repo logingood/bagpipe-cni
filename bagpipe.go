@@ -10,14 +10,14 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/safchain/ethtool"
-	"github.com/vishvananda/netlink"
 	"github.com/appc/cni/pkg/ip"
 	"github.com/appc/cni/pkg/ipam"
 	"github.com/appc/cni/pkg/ns"
 	"github.com/appc/cni/pkg/skel"
 	"github.com/appc/cni/pkg/types"
 	"github.com/appc/cni/pkg/utils"
+	"github.com/safchain/ethtool"
+	"github.com/vishvananda/netlink"
 )
 
 // Adding additional configuration for EVPN - importRT and exportRT
@@ -220,15 +220,15 @@ func cmdDel(args *skel.CmdArgs) error {
 	var ip_addr string
 	var if_index uint64
 
-
 	err = ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
 		link, _ := netlink.LinkByName(args.IfName)
 
 		// Getting container MAC address
-		contMacAddr =fmt.Sprintf("%s", link.Attrs().HardwareAddr)
+		contMacAddr = fmt.Sprintf("%s", link.Attrs().HardwareAddr)
 		// Getting container IP address, should be rewritten PoC
 		cont_IP, _ := netlink.AddrList(link, netlink.FAMILY_V4)
-		ip_addr = fmt.Sprintf("%s", cont_IP[0].IPNet.IP)
+		prefix, _ := cont_IP[0].IPNet.Mask.Size()
+		ip_addr = fmt.Sprintf("%s/%d", cont_IP[0].IPNet.IP, prefix)
 
 		// Getting peer interface index in Root namespace
 		stats, _ := ethtool.Stats(args.IfName)
