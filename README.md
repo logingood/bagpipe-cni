@@ -48,13 +48,13 @@ Just put the example below in file /etc/cni/net.d/10-mynet.conf
   "isGateway": false,
   "ipMasq": false,
   "mtu": "1500", 
-	"ipam": {
-		"type": "host-local",
-		"subnet": "10.1.2.0/24",
-    "routes": [
-      { "dst": "0.0.0.0/0" }
-    ]
-	}
+    "ipam": {
+      "type": "host-local",
+      "subnet": "10.1.2.0/24",
+      "routes": [
+        { "dst": "0.0.0.0/0" }
+      ]
+    }
 }
 ```
 
@@ -65,6 +65,10 @@ Just put the example below in file /etc/cni/net.d/10-mynet.conf
 * `importrt` (string, required): import community
 * `exportrt` (string, required): export community
 * `mtu` (integer, optional): explicitly set MTU to the specified value. Defaults to the value chosen by the kernel.
+
+## Usage with Kubernetes
+
+I have published a blog post, where described [PoC: BaGPipe CNI and Kubernetes](http://murat1985.github.io/kubernetes/cni/2016/05/15/kubernetes.html)
 
 ## Usage with Docker
 
