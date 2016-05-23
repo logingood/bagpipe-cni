@@ -112,9 +112,9 @@ func sendBagpipeReq(n *NetConf, Request string, LocalPort string, gw string, ipa
 	return err
 }
 
-func setupVeth(netns string, ifName string, mtu int) (contMacAddr string, hostVethName string, err error) {
+func setupVeth(netns ns.NetNS, ifName string, mtu int) (contMacAddr string, hostVethName string, err error) {
 
-	err = ns.WithNetNSPath(netns, false, func(hostNS *os.File) error {
+	err = netns.Do(func(hostNS ns.NetNS) error {
 		// create the veth pair in the container and move host end into host netns
 		hostVeth, _, err := ip.SetupVeth(ifName, mtu, hostNS)
 		if err != nil {
@@ -157,7 +157,13 @@ func cmdAdd(args *skel.CmdArgs) error {
 	var vethName string
 	var macAddr string
 
-	if macAddr, vethName, err = setupVeth(args.Netns, args.IfName, n.MTU); err != nil {
+	netns, err := ns.GetNS(args.Netns)
+	if err != nil {
+		return fmt.Errorf("failed to open netns %q: %v", args.Netns, err)
+	}
+	defer netns.Close()
+
+	if macAddr, vethName, err = setupVeth(netns, args.IfName, n.MTU); err != nil {
 		return err
 	}
 
@@ -175,7 +181,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 		result.IP4.Gateway = calcGatewayIP(&result.IP4.IP)
 	}
 
-	err = ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
+	err = netns.Do(func(_ ns.NetNS) error {
 		return ipam.ConfigureIface(args.IfName, result)
 	})
 	if err != nil {
@@ -220,7 +226,8 @@ func cmdDel(args *skel.CmdArgs) error {
 	var ip_addr string
 	var if_index uint64
 
-	err = ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
+	//	err = ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
+	err = ns.WithNetNSPath(args.Netns, func(_ ns.NetNS) error {
 		link, _ := netlink.LinkByName(args.IfName)
 
 		// Getting container MAC address
