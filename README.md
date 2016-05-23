@@ -37,6 +37,11 @@ Build plugins
 
 ## Example configuration
 
+Supported IP manager plugins:
+
+[host-local IP address manager](https://github.com/containernetworking/cni/tree/master/plugins/ipam/host-local)
+[consul IP address manager](https://github.com/murat1985/cni-ipam-consul)
+
 Just put the example below in file /etc/cni/net.d/10-mynet.conf 
 
 ```
