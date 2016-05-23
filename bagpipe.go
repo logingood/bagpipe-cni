@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"runtime"
 
 	"github.com/containernetworking/cni/pkg/ip"
