@@ -1,0 +1,15 @@
+[submodule "vendor/github.com/containernetworking/cni"]
+	path = vendor/github.com/containernetworking/cni
+	url = git://github.com/containernetworking/cni
+[submodule "vendor/github.com/coreos/go-iptables"]
+	path = vendor/github.com/coreos/go-iptables
+	url = git://github.com/coreos/go-iptables
+[submodule "vendor/github.com/safchain/ethtool"]
+	path = vendor/github.com/safchain/ethtool
+	url = git://github.com/safchain/ethtool
+[submodule "vendor/github.com/vishvananda/netlink"]
+	path = vendor/github.com/vishvananda/netlink
+	url = git://github.com/vishvananda/netlink
+[submodule "vendor/github.com/vishvananda/netns"]
+	path = vendor/github.com/vishvananda/netns
+	url = git://github.com/vishvananda/netns
