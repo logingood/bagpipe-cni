@@ -13,3 +13,9 @@
 [submodule "vendor/github.com/vishvananda/netns"]
 	path = vendor/github.com/vishvananda/netns
 	url = git://github.com/vishvananda/netns
+[submodule "vendor/github.com/onsi/ginkgo"]
+	path = vendor/github.com/onsi/ginkgo
+	url = git://github.com/onsi/ginkgo
+[submodule "vendor/github.com/onsi/gomgea"]
+	path = vendor/github.com/onsi/gomgea
+	url = git://github.com/onsi/gomega

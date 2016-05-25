@@ -1,0 +1,16 @@
+language: go
+go: 
+  - 1.5.3
+  - 1.6
+  - tip
+env:
+  global:
+    - TOOLS_CMD=golang.org/x/tools/cmd
+    - PATH=$GOROOT/bin:$PATH
+    - GO15VENDOREXPERIMENT=1
+sudo: required
+install:
+  - go get github.com/murat1985/bagpipe-cni
+  - go get github.com/onsi/ginkgo
+  - go get github.com/onsi/gomega
+script: go test

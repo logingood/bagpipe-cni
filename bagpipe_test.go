@@ -17,16 +17,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"net"
-	//	"syscall"
 
 	"github.com/containernetworking/cni/pkg/ns"
-	//"github.com/containernetworking/cni/pkg/ip"
-	//"github.com/containernetworking/cni/pkg/skel"
-	///	"github.com/containernetworking/cni/pkg/testutils"
 	"github.com/containernetworking/cni/pkg/types"
-
-	//	"github.com/vishvananda/netlink"
+	"github.com/vishvananda/netlink"
+	"github.com/safchain/ethtool"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -102,12 +97,10 @@ var _ = Describe("bridge Operations", func() {
 		}
 
 		var contMacAddr string
-		var if_index string
+		var if_index uint64
 
-		macAddr, hostVeth, err := setupVeth(originalNS, IFNAME, conf.MTU)
+		macAddr, hostVethName, err := setupVeth(originalNS, IFNAME, conf.MTU)
 		Expect(err).NotTo(HaveOccurred())
-
-		hostVethName := hostVeth.Attrs().Name
 
 		err = originalNS.Do(func(ns.NetNS) error {
 			//	err = ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
