@@ -12,7 +12,23 @@ Nice example of go-based RR: [GoBGP](http://osrg.github.io/gobgp/) and EVPN lab 
 
 ## Install
 
-The easiest way to install plugin is to clone CNI repositority: [CNI](https://github.com/containernetworking/cni)
+### Option 1
+Clone repository within $GOPATH
+````
+git clone https://github.com/murat1985/bagpipe-cni $GOPATH/bagpipe
+````
+Then build plugin:
+```
+cd $GOPATH/bagpipe
+go install
+```
+Plugin would be install into $GOBIN, e.g.:
+```
+~/cni/bin/bagpipe
+```
+
+### Option 2
+The second way to install plugin altogether with other CNI plugins and IPAM plugins. Clone CNI repositority: [CNI](https://github.com/containernetworking/cni)
 
 Make sure that GOPATH environment variable is set
 
@@ -22,7 +38,7 @@ git clone https://github.com/containernetworking/cni
 cd cni/plugins/main
 ```
 
-Install bagpipe CNI plugin into plugins/main/bagpipe
+Clone bagpipe CNI plugin into plugins/main/bagpipe
 
 ```
 git clone https://github.com/murat1985/cni-bagpipe-bgp bagpipe
