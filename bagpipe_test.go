@@ -27,7 +27,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("bridge Operations", func() {
+var _ = Describe("bagpipe Operations", func() {
 	var originalNS ns.NetNS
 
 	BeforeEach(func() {

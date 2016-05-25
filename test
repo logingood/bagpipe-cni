@@ -1,0 +1,6 @@
+export GO15VENDOREXPERIMENT=1
+export GOBIN=${PWD}/bin
+export GOPATH=${PWD}/gopath
+
+set -e
+sudo -E bash -c "umask 0; PATH=$GOROOT/bin:$GOBIN:$PATH go test
