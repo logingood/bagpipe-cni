@@ -12,13 +12,13 @@ Nice example of go-based RR: [GoBGP](http://osrg.github.io/gobgp/) and EVPN lab 
 
 ## Install
 
-The easiest way to install plugin is to clone CNI repositority: [CNI](https://github.com/appc/cni)
+The easiest way to install plugin is to clone CNI repositority: [CNI](https://github.com/containernetworking/cni)
 
 Make sure that GOPATH environment variable is set
 
 ```
 cd $GOPATH
-git clone https://github.com/appc/cni
+git clone https://github.com/containernetworking/cni
 cd cni/plugins/main
 ```
 
@@ -78,7 +78,7 @@ I have published a blog post, where described [PoC: BaGPipe CNI and Kubernetes](
 ## Usage with Docker
 
 Assuming that cni installed in the $GOPATH/cni and bagpipe CNI plugin is installed in plugins/main/bagpipe
-docker-run.sh script could be found in scripts directory of [CNI](https://github.com/appc/cni/blob/master/scripts/docker-run.sh) repository
+docker-run.sh script could be found in scripts directory of [CNI](https://github.com/containernetworking/cni/blob/master/scripts/docker-run.sh) repository
 
 ```
 cd $GOPATH/cni
