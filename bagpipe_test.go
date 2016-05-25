@@ -15,18 +15,18 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
-	"encoding/json"
-//	"syscall"
+	//	"syscall"
 
 	"github.com/containernetworking/cni/pkg/ns"
 	//"github.com/containernetworking/cni/pkg/ip"
 	//"github.com/containernetworking/cni/pkg/skel"
-///	"github.com/containernetworking/cni/pkg/testutils"
+	///	"github.com/containernetworking/cni/pkg/testutils"
 	"github.com/containernetworking/cni/pkg/types"
 
-//	"github.com/vishvananda/netlink"
+	//	"github.com/vishvananda/netlink"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -55,9 +55,9 @@ var _ = Describe("bridge Operations", func() {
 			},
 			ImportRT: "12345:90",
 			ExportRT: "12345:90",
-			IsGW:   false,
-			IPMasq: false,
-			MTU:    5000,
+			IsGW:     false,
+			IPMasq:   false,
+			MTU:      5000,
 		}
 		defer GinkgoRecover()
 
@@ -96,26 +96,37 @@ var _ = Describe("bridge Operations", func() {
 			},
 			ImportRT: "12345:90",
 			ExportRT: "12345:90",
-			IsGW:   false,
-			IPMasq: false,
-			MTU:    5000,
+			IsGW:     false,
+			IPMasq:   false,
+			MTU:      5000,
 		}
 
 		var contMacAddr string
+		var if_index string
 
-		macAddr, _, err := setupVeth(originalNS, IFNAME, conf.MTU)
+		macAddr, hostVeth, err := setupVeth(originalNS, IFNAME, conf.MTU)
 		Expect(err).NotTo(HaveOccurred())
+
+		hostVethName := hostVeth.Attrs().Name
+
 		err = originalNS.Do(func(ns.NetNS) error {
-			interfaces, _ := net.Interfaces()
-			for _, inter := range interfaces {
-				if inter.Name != "lo" {
-					contMacAddr = fmt.Sprintf("%v", inter.HardwareAddr)
-				}
-			}
+			//	err = ns.WithNetNSPath(args.Netns, false, func(hostNS *os.File) error {
+			link, _ := netlink.LinkByName(IFNAME)
+			// Getting container MAC address
+			contMacAddr = fmt.Sprintf("%s", link.Attrs().HardwareAddr)
+			// Getting peer interface index in Root namespace
+			stats, _ := ethtool.Stats(IFNAME)
+			if_index = stats["peer_ifindex"]
 			return nil
 		})
 		Expect(err).NotTo(HaveOccurred())
+
+		// Getting hostlink based on if_index in Root NS
+		hostlink, _ := netlink.LinkByIndex(int(if_index))
+		hostVethName_test := hostlink.Attrs().Name
+
 		Expect(macAddr).To(Equal(contMacAddr))
+		Expect(hostVethName).To(Equal(hostVethName_test))
 
 		defer GinkgoRecover()
 	})
