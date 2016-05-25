@@ -3,6 +3,7 @@
 set -e
 
 export GO15VENDOREXPERIMENT=1
+export GOBIN=${PWD}/bin
 export GOPATH=${PWD}
 
-sudo -E bash -c "umask 0; go test"
+sudo -E bash -c "umask 0; PATH=$GOROOT/bin:$GOBIN:$PATH go test"
