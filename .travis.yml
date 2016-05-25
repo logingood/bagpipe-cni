@@ -13,4 +13,4 @@ install:
   - go get github.com/murat1985/bagpipe-cni
   - go get github.com/onsi/ginkgo
   - go get github.com/onsi/gomega
-script: go test
+script: sudo go test
