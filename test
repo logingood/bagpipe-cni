@@ -2,7 +2,6 @@
 
 set -e
 
-
 ORG_PATH="github.com/murat1985"
 REPO_PATH="${ORG_PATH}/bagpipe-cni"
 
@@ -15,7 +14,7 @@ fi
 
 export GO15VENDOREXPERIMENT=1
 export GOBIN=${PWD}/bin
-export GOPATH=${PWD}/go
+export GOPATH=${PWD}/gopath
 
 go get github.com/onsi/gomega
 go get github.com/onsi/ginkgo
