@@ -7,13 +7,16 @@ ORG_PATH="github.com/murat1985"
 REPO_PATH="${ORG_PATH}/bagpipe-cni"
 
 if [ ! -h gopath/src/${REPO_PATH} ]; then
+  echo "creating dir gopath/src/${ORG_PATH}"
   mkdir -p gopath/src/${ORG_PATH}
+  echo "link to ../../../.. gopath/src/${REPO_PATH}"
   ln -s ../../../.. gopath/src/${REPO_PATH} || exit 255
 fi
 
 export GO15VENDOREXPERIMENT=1
 export GOBIN=${PWD}/bin
 export GOPATH=${PWD}
+echo "Current dir ${PWD}"
 
 go build
 
