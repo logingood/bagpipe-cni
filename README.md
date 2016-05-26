@@ -13,19 +13,16 @@ Nice example of go-based RR: [GoBGP](http://osrg.github.io/gobgp/) and EVPN lab 
 ## Install
 
 ### Option 1
-Clone repository within $GOPATH
+
+Use go get:
 ````
-git clone https://github.com/murat1985/bagpipe-cni $GOPATH/bagpipe
+go get github.com/murat1985/bagpipe-cni
 ````
-Then build plugin:
+package would be installed into your $GOBIN path, e.g.: 
 ```
-cd $GOPATH/bagpipe
-go install
+/usr/local/go/bin
 ```
-Plugin would be install into $GOBIN, e.g.:
-```
-~/cni/bin/bagpipe
-```
+Bare in mind if you are going to use it with Kubernetes plugin should reside in ```/opt/cni/bin```
 
 ### Option 2
 The second way to install plugin altogether with other CNI plugins and IPAM plugins. Clone CNI repositority: [CNI](https://github.com/containernetworking/cni)
@@ -41,7 +38,7 @@ cd cni/plugins/main
 Clone bagpipe CNI plugin into plugins/main/bagpipe
 
 ```
-git clone https://github.com/murat1985/cni-bagpipe-bgp bagpipe
+git clone https://github.com/murat1985/bagpipe-bgp bagpipe
 cd ../../
 ```
 
@@ -99,7 +96,7 @@ docker-run.sh script could be found in scripts directory of [CNI](https://github
 ```
 cd $GOPATH/cni
 CNI_PATH=`pwd`/bin
-./build; cd scripts; CNI_PATH=$CNI_PATH ./docker-run.sh busybox sleep 1000 ; cd ..
+./build; cd scripts; CNI_PATH=$CNI_PATH ./docker-run.sh busybox ifconfig eth0 ; cd ..
 ```
 
 Adding and Deleting of bagpipe tunnels along with container links fully implemented.
