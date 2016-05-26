@@ -6,12 +6,14 @@ set -e
 ORG_PATH="github.com/murat1985"
 REPO_PATH="${ORG_PATH}/bagpipe-cni"
 
-if [ ! -h gopath/src/${REPO_PATH} ]; then
+if [ ! -h src/${REPO_PATH} ]; then
   echo "creating dir gopath/src/${ORG_PATH}"
-  mkdir -p gopath/src/${ORG_PATH}
+  mkdir -p src/${ORG_PATH}
   echo "link to ../../../.. gopath/src/${REPO_PATH}"
-  ln -s ../../../.. gopath/src/${REPO_PATH} || exit 255
+  ln -s ../../../.. src/${REPO_PATH} || exit 255
 fi
+
+ls vendor/github.com | while read vendor; do ln -s ${PWD}/vendor/github.com/$vendor src/github.com/$vendor; done
 
 export GO15VENDOREXPERIMENT=1
 export GOBIN=${PWD}/bin
@@ -19,9 +21,7 @@ export GOPATH=${PWD}
 echo "Current dir ${PWD}"
 echo "GOPATH=${GOPATH}"
 
-ls ${PWD}
-
-
-go build
+go get github.com/onsi/gomega
+go get github.com/onsi/ginkgo
 
 sudo -E bash -c "umask 0; PATH=$GOROOT/bin:$GOBIN:$PATH go test"
