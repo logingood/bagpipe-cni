@@ -10,7 +10,7 @@ env:
     - GO15VENDOREXPERIMENT=1
 sudo: required
 install:
-  - git clone https://github.com/murat1985/bagpipe-cni
+  - go get github.com/murat1985/bagpipe-cni
 script: 
   - ./test
 notifications:
