@@ -17,6 +17,10 @@ export GO15VENDOREXPERIMENT=1
 export GOBIN=${PWD}/bin
 export GOPATH=${PWD}
 echo "Current dir ${PWD}"
+echo "GOPATH=${GOPATH}"
+
+ls ${PWD}
+
 
 go build
 
