@@ -21,4 +21,4 @@ go get github.com/onsi/ginkgo
 
 go build $REPO_PATH
 
-sudo -E bash -c "umask 0; PATH=$GOROOT/bin:$GOBIN:$PATH go test $REPO_PATH"
+sudo -E bash -c "umask 0; PATH=$GOROOT/bin:$GOBIN:$PATH go test -covermode set $REPO_PATH"
