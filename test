@@ -2,8 +2,18 @@
 
 set -e
 
+
+REPO_PATH="github.com/murat1985/bagpipe-cni"
+
+if [ ! -h gopath/src/${REPO_PATH} ]; then
+  mkdir -p gopath/src/${ORG_PATH}
+  ln -s ../../../.. gopath/src/${REPO_PATH} || exit 255
+fi
+
 export GO15VENDOREXPERIMENT=1
 export GOBIN=${PWD}/bin
 export GOPATH=${PWD}
+
+go build
 
 sudo -E bash -c "umask 0; PATH=$GOROOT/bin:$GOBIN:$PATH go test"
