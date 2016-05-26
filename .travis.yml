@@ -1,0 +1,18 @@
+language: go
+dist: trusty
+go: 
+  - 1.5.3
+  - 1.6
+  - tip
+env:
+  global:
+    - TOOLS_CMD=golang.org/x/tools/cmd
+    - PATH=$GOROOT/bin:$PATH
+    - GO15VENDOREXPERIMENT=1
+sudo: required
+install:
+  - go get github.com/murat1985/bagpipe-cni
+script: 
+  - ./test
+notifications:
+  email: false
