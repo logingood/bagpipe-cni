@@ -3,7 +3,8 @@
 set -e
 
 
-REPO_PATH="github.com/murat1985/bagpipe-cni"
+ORG_PATH="github.com/murat1985"
+REPO_PATH="${ORG_PATH}/bagpipe-cni"
 
 if [ ! -h gopath/src/${REPO_PATH} ]; then
   mkdir -p gopath/src/${ORG_PATH}
