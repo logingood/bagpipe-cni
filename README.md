@@ -109,4 +109,4 @@ Adding and Deleting of bagpipe tunnels along with container links fully implemen
 ![alt text](https://github.com/murat1985/bagpipe-cni/blob/master/diagrams/CNI-Bagpipe.png "BaGPipe BGP CNI plugin")
 
 ## TODO
-1. GW allocation
+1. GW allocation (relying on BaGPipe BGP as it is responsible to create a bridge and vxlan interfaces)
